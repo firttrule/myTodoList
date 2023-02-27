@@ -1,0 +1,1 @@
+<template>Hello to everyone from Volokolamsk</template>
