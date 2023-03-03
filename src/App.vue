@@ -66,11 +66,14 @@ import {
   doc,
   deleteDoc,
   updateDoc,
+  query,
+  orderBy,
 } from "firebase/firestore";
 import { db } from "@/firebase";
 
 // firebase ref
-const todosCollectinoRef = collection(db, "todos");
+const todosCollectionRef = collection(db, "todos");
+const todosCollectionQuery = query(todosCollectionRef, orderBy("date", "desc"));
 
 // todos
 const todos = ref([
@@ -88,7 +91,7 @@ const todos = ref([
 
 // get todos
 onMounted(() => {
-  onSnapshot(todosCollectinoRef, (querySnapshot) => {
+  onSnapshot(todosCollectionQuery, (querySnapshot) => {
     const fbTodos = [];
     querySnapshot.forEach((doc) => {
       const todo = {
@@ -106,23 +109,24 @@ onMounted(() => {
 const newtodoContent = ref("");
 
 const addTodo = () => {
-  addDoc(todosCollectinoRef, {
+  addDoc(todosCollectionRef, {
     content: newtodoContent.value,
     done: false,
+    date: Date.now(),
   });
   newtodoContent.value = "";
 };
 
 // delete todo
 const deleteTodo = (id) => {
-  deleteDoc(doc(todosCollectinoRef, id));
+  deleteDoc(doc(todosCollectionRef, id));
 };
 
 // toggle done
 const toggleDone = (id) => {
   const index = todos.value.findIndex((todo) => todo.id === id);
 
-  updateDoc(doc(todosCollectinoRef, id), {
+  updateDoc(doc(todosCollectionRef, id), {
     done: !todos.value[index].done,
   });
 };
