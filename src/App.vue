@@ -59,12 +59,13 @@
 <script setup>
 // import
 import { ref, onMounted } from "vue";
-import { v4 as uuidv4 } from "uuid";
-import { collection, onSnapshot } from "firebase/firestore";
+import { collection, onSnapshot, addDoc } from "firebase/firestore";
 import { db } from "@/firebase";
 
-// todos
+// firebase ref
+const todosCollectinoRef = collection(db, "todos");
 
+// todos
 const todos = ref([
   // {
   //   id: "id1",
@@ -80,7 +81,7 @@ const todos = ref([
 
 // get todos
 onMounted(() => {
-  onSnapshot(collection(db, "todos"), (querySnapshot) => {
+  onSnapshot(todosCollectinoRef, (querySnapshot) => {
     const fbTodos = [];
     querySnapshot.forEach((doc) => {
       const todo = {
@@ -95,16 +96,13 @@ onMounted(() => {
 });
 
 // add todo
-
 const newtodoContent = ref("");
 
 const addTodo = () => {
-  const newTodo = {
-    id: uuidv4(),
+  addDoc(todosCollectinoRef, {
     content: newtodoContent.value,
     done: false,
-  };
-  todos.value.unshift(newTodo);
+  });
   newtodoContent.value = "";
 };
 
